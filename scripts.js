@@ -65,45 +65,57 @@ const MONTHS = [
   
   // Only edit below this comment
   
-  const createHtml = (athlete) => {
-    firstName, surname, id, races = athlete
-    [date], [time] = races.reverse()
+    // Function to create HTML elements for an athlete
+  const createHtml = (athleteData) => {
+    // Extract athlete information from the data
+    const { firstName, surname, id, races } = athleteData;
   
+    // Find the latest race
+    const latestRace = races[races.length - 1];
+  
+    // Extract date and time information from the latest race
+    const raceDate = new Date(latestRace.date);
+    const raceTime = latestRace.time;
+  
+    // Calculate total time for the latest race
+    const totalMinutes = raceTime.reduce((acc, lapTime) => acc + lapTime, 0);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+  
+    // Create HTML elements
     const fragment = document.createDocumentFragment();
   
-    title = document.createElement(h2);
-    title= id;
+    const title = document.createElement('h2');
+    title.textContent = `Athlete: ${id}`;
     fragment.appendChild(title);
   
-    const list = document.createElement(dl);
+    const list = document.createElement('dl');
   
-    const day = date.getDate();
-    const month = MONTHS[date.month];
-    const year = date.year;
+    // Create date string in the format 'd MMM YYYY'
+    const formattedDate = `${raceDate.getDate()} ${MONTHS[raceDate.getMonth()]} ${raceDate.getFullYear()}`;
   
-    first, second, third, fourth = timeAsArray;
-    total = first + second + third + fourth;
-  
-    const hours = total / 60;
-    const minutes = total / hours / 60;
-  
-    list.innerHTML = /* html */ `
-      <dt>Athlete</dt>
-      <dd>${firstName surname}</dd>
-  
+    list.innerHTML = `
+      <dt>Full Name</dt>
+      <dd>${firstName} ${surname}</dd>
       <dt>Total Races</dt>
-      <dd>${races}</dd>
-  
+      <dd>${races.length}</dd>
       <dt>Event Date (Latest)</dt>
-      <dd>${day month year}</dd>
-  
+      <dd>${formattedDate}</dd>
       <dt>Total Time (Latest)</dt>
-      <dd>${hours.padStart(2, 0) minutes}</dd>
+      <dd>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}</dd>
     `;
   
     fragment.appendChild(list);
-  }
   
-  [NM372], [SV782] = data
-  document.querySelector(NM372).appendChild(createHtml(NM372));
-  document.querySelector(SV782).appendChild(createHtml(SV782));
+    return fragment; 
+  };
+  
+  // Get the <section> elements by their data-athlete attributes and append athlete information
+  const nmSection = document.querySelector('[data-athlete="NM372"]');
+  const svSection = document.querySelector('[data-athlete="SV782"]');
+  
+  // Append athlete information to the respective <section> elements
+  if (nmSection && svSection) {
+    nmSection.appendChild(createHtml(data.response.data.NM372));
+    svSection.appendChild(createHtml(data.response.data.SV782));
+  }
